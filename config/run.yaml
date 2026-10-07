@@ -1,0 +1,71 @@
+random_state: 42
+
+dataset:
+  classes:
+    NORMAL: "NORMAL"
+    CNV: "CNV"
+    DRUSEN: "DRUSEN"
+    DME: "DME"
+  max_samples_per_class: 3000
+
+preprocessing:
+  # - corner_artifact_remover:
+  #     min_threshold: 217
+  #     approximation_epsilon: 0.01
+  #     max_area_ratio: 0.50
+  #     ksize: [5, 5]
+  # - dwt_denoiser:
+  #     method: "VisuShrink"
+  #     wavelet: "sym2"
+  #     mode: "soft"
+  #     wavelet_levels: 1
+  #     rescale_sigma: false
+  #     channel_axis: -1
+  # - rpe_roi_aligner:
+  #     roi_above: 137
+  #     roi_below: 51
+  #     blur_sigma: 6
+  #     max_jump: 10
+  #     poly_degree: 6
+  - resizer:
+      target_size: [256, 120]
+
+feature_extraction:
+  - cdch:
+      angle_step: 5
+      center: [0.4934265977665214, 0.5521780411467775]
+      pixel_range: [26, 230]
+      bins: 96
+  # - ldch:
+  #     sections: 120
+  #     layout: "row"
+  #     pixel_range: [1, 200]
+  #     bins: 64
+  # - hog:
+  #     orientations: 12
+  #     pixels_per_cell: [16, 16]
+  #     cells_per_block: [2, 2]
+  #     block_norm: "L2"
+  #     transform_sqrt: false
+
+dimensionality_reduction:
+  - pca:
+      n_components: 59
+      whiten: false
+      svd_solver: "randomized"
+      random_state: 42
+      iterated_power: 6
+      power_iteration_normalizer: "QR"
+
+classification:
+  - random_forest:
+      bootstrap: true
+      criterion: "entropy"
+      n_estimators: 500
+      max_depth: 43
+      max_samples: 0.9993905490797066
+      min_samples_split: 4
+      min_samples_leaf: 2
+      max_features: "sqrt"
+      class_weight: "balanced"
+      random_state: 42

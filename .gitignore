@@ -1,0 +1,10 @@
+model_output/
+artifacts/
+
+.vscode/
+.venv/
+**/__pycache__/
+oct.egg-info/
+
+.env
+optuna_tuning.db

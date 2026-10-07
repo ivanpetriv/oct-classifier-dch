@@ -1,0 +1,63 @@
+random_state: 42
+
+dataset:
+  classes:
+    NORMAL: "NORMAL"
+    CNV: "CNV"
+    DRUSEN: "DRUSEN"
+    DME: "DME"
+  max_samples_per_class: 3000
+
+preprocessing:
+  # - corner_artifact_remover:
+  #     min_threshold: 217
+  #     approximation_epsilon: 0.01
+  #     max_area_ratio: 0.50
+  #     ksize: [5, 5]
+  # - dwt_denoiser:
+  #     method: "VisuShrink"
+  #     wavelet: "sym2"
+  #     mode: "soft"
+  #     wavelet_levels: 1
+  #     rescale_sigma: false
+  #     channel_axis: -1
+  # - rpe_roi_aligner:
+  #     roi_above: 137
+  #     roi_below: 51
+  #     blur_sigma: 6
+  #     max_jump: 10
+  #     poly_degree: 6
+  - resizer:
+      target_size: [256, 120]
+
+feature_extraction:
+  - ldch:
+      sections: 120
+      layout: "row"
+      pixel_range: [1, 200]
+      bins: 64
+  # - hog:
+  #     orientations: 12
+  #     pixels_per_cell: [16, 16]
+  #     cells_per_block: [2, 2]
+  #     block_norm: "L2"
+  #     transform_sqrt: false
+
+dimensionality_reduction:
+  - pca:
+      n_components: 416
+      whiten: false
+      svd_solver: "randomized"
+      random_state: 42
+      iterated_power: 4
+      power_iteration_normalizer: "auto"
+
+classification:
+  - svm:
+      kernel: "rbf"
+      C: 6.029631736367612
+      gamma: 0.00014170492597064872
+      class_weight: "balanced"
+      probability: true
+      shrinking: true
+      degree: 5
