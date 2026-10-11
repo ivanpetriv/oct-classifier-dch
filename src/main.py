@@ -5,10 +5,8 @@ Parses the CLI command and runs a corresponding function in functions.py.
 """
 
 import sys
-from pathlib import Path
 
 from config.oct_config import OctConfig
-from dataset.oct_dataset import DataLoader
 from functions import (
     run_config_schema_generation,
     run_dataset_preprocessing,
@@ -24,11 +22,15 @@ from parser import get_parser
 
 
 def main():
-    """Main entry point for the OCT Classification Pipeline CLI."""
+    """Main entry point."""
     parser = get_parser()
     args = parser.parse_args()
 
-    # Load configuration
+    if args.command == "generate-schema":
+        run_config_schema_generation(args.output)
+        print(f"\n✓ Schema generated: {args.output}")
+        sys.exit(0)
+
     try:
         config = OctConfig.from_yaml(args.config)
     except FileNotFoundError:
@@ -38,19 +40,29 @@ def main():
     try:
         match args.command:
             case "train-final":
-                if not args.train_path:
-                    print("Error: Train dataset path required (--train-path or config)")
+                if not args.train_data:
+                    print(
+                        "Error: Train dataset path required (--train-data or TRAIN_DATASET_PATH in .env)"
+                    )
                     sys.exit(1)
-                run_training(config, args.train_path, args.output)
-                print(f"\n✓ Model training complete. Saved to: {args.output}")
+                if not args.save_model:
+                    print(
+                        "Error: Model save path required (--save-model or MODEL_SAVE_FOLDER in .env)"
+                    )
+                    sys.exit(1)
+                # Pass args.save_run_data as well if run_training expects it
+                run_training(config, args.train_data, args.save_model)
+                print(f"\n✓ Model training complete. Saved to: {args.save_model}")
 
             case "train-kfold":
-                if not args.train_path:
-                    print("Error: Train dataset path required (--train-path or config)")
+                if not args.train_data:
+                    print(
+                        "Error: Train dataset path required (--train-data or TRAIN_DATASET_PATH in .env)"
+                    )
                     sys.exit(1)
                 run_kfold(
                     config,
-                    args.train_path,
+                    args.train_data,
                     args.n_splits,
                     args.n_folds_to_use,
                 )
@@ -66,16 +78,23 @@ def main():
                 run_inference(config, args.image, args.model)
 
             case "test":
-                if not args.test_path:
-                    print("Error: Test dataset path required (--test-path or config)")
+                if not args.test_data:
+                    print(
+                        "Error: Test dataset path required (--test-data or TEST_DATASET_PATH in .env)"
+                    )
                     sys.exit(1)
                 if not args.model.exists():
                     print(f"Error: Model file not found: {args.model}")
                     sys.exit(1)
-                run_test(config, Path(args.test_path), args.model)
+                run_test(config, args.test_data, args.model)
                 print("\n✓ Model evaluation complete")
 
             case "tune":
+                if not args.dataset:
+                    print(
+                        "Error: Dataset path required (--dataset or TRAIN_DATASET_PATH in .env)"
+                    )
+                    sys.exit(1)
                 print(
                     f"Running optuna tuning (study: {args.study_name}, db: {args.db})"
                 )
@@ -85,7 +104,7 @@ def main():
 
                 run_study(
                     config=config,
-                    dataset_path=args.dataset_path,
+                    dataset_path=args.dataset,
                     db_path=args.db,
                     study_name=args.study_name,
                     n_trials=args.n_trials or 10,
@@ -96,22 +115,22 @@ def main():
                 )
 
             case "preprocess-dataset":
-                if not args.train_path:
-                    print("Error: Train dataset path required (--train-path or config)")
+                if not args.data.exists():
+                    print(f"Error: Raw dataset path not found: {args.data}")
                     sys.exit(1)
-                if not args.output:
-                    print("Error: Output path required (--output or config)")
-                    sys.exit(1)
-                run_dataset_preprocessing(config, Path(args.output))
+                # Ensure run_dataset_preprocessing accepts (config, input_path, output_path)
+                run_dataset_preprocessing(config, args.data, args.output)
                 print(f"\n✓ Dataset preprocessing complete. Saved to: {args.output}")
 
             case "visualize-features":
                 if not args.image.exists():
                     print(f"Error: Image file not found: {args.image}")
                     sys.exit(1)
-                run_feature_extracting_visualization(config, args.image, args.output)
-                if args.output:
-                    print(f"\n✓ Feature visualization saved to: {args.output}")
+                run_feature_extracting_visualization(
+                    config, args.image, args.output_image
+                )
+                if args.output_image:
+                    print(f"\n✓ Feature visualization saved to: {args.output_image}")
                 else:
                     print("\n✓ Feature visualization displayed")
 
@@ -119,15 +138,13 @@ def main():
                 if not args.image.exists():
                     print(f"Error: Image file not found: {args.image}")
                     sys.exit(1)
-                run_preprocessing_visualization(config, args.image, args.output)
-                if args.output:
-                    print(f"\n✓ Preprocessing visualization saved to: {args.output}")
+                run_preprocessing_visualization(config, args.image, args.output_image)
+                if args.output_image:
+                    print(
+                        f"\n✓ Preprocessing visualization saved to: {args.output_image}"
+                    )
                 else:
                     print("\n✓ Preprocessing visualization displayed")
-
-            case "generate-schema":
-                run_config_schema_generation(args.output)
-                print(f"\n✓ Schema generated: {args.output}")
 
             case _:
                 parser.print_help()

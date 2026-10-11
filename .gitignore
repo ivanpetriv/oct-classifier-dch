@@ -1,5 +1,5 @@
 model_output/
-artifacts/
+run_data/
 
 .vscode/
 .venv/

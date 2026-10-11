@@ -8,14 +8,11 @@ def generate_optuna_seed(config: OctConfig) -> dict[str, Any]:
     """
     seed = {}
 
-    # Convert config to a raw dictionary to easily parse list-of-dicts structures
-    # Adjust `model_dump` to `dict()` if you are using older Pydantic versions
     config_dict = config.model_dump()
 
-    # 1. PREPROCESSING
     for step_dict in config_dict.get("preprocessing") or []:
         for name, params in step_dict.items():
-            prefix = name  # Matches the default prefix in PreprocessingTuners
+            prefix = name
 
             if name == "resizer":
                 target_size = params.get("target_size", [256, 120])
@@ -40,7 +37,6 @@ def generate_optuna_seed(config: OctConfig) -> dict[str, Any]:
                 seed[f"{prefix}_poly_degree"] = params.get("poly_degree")
                 seed[f"{prefix}_max_jump"] = params.get("max_jump")
 
-    # 2. FEATURE EXTRACTION
     for step_dict in config_dict.get("feature_extraction") or []:
         for name, params in step_dict.items():
             prefix = name
@@ -54,7 +50,6 @@ def generate_optuna_seed(config: OctConfig) -> dict[str, Any]:
                     seed[f"{prefix}_max_val"] = params["pixel_range"][1]
 
             elif name == "hog":
-                # Extracted from [16, 16] to 16
                 seed[f"{prefix}_cell_size"] = params.get("pixels_per_cell", [8])[0]
                 seed[f"{prefix}_cells_per_block"] = params.get("cells_per_block", [1])[
                     0
@@ -85,7 +80,6 @@ def generate_optuna_seed(config: OctConfig) -> dict[str, Any]:
                 if name == "rcldch":
                     seed[f"{prefix}_sections"] = params.get("sections")
 
-    # 3. DIMENSIONALITY REDUCTION
     for step_dict in config_dict.get("dimensionality_reduction") or []:
         for name, params in step_dict.items():
             prefix = name
@@ -99,7 +93,6 @@ def generate_optuna_seed(config: OctConfig) -> dict[str, Any]:
                     "power_iteration_normalizer"
                 )
 
-    # 4. CLASSIFICATION
     for step_dict in config_dict.get("classification") or []:
         for name, params in step_dict.items():
             prefix = name
@@ -142,5 +135,4 @@ def generate_optuna_seed(config: OctConfig) -> dict[str, Any]:
                 seed[f"{prefix}_class_weight"] = params.get("class_weight")
                 seed[f"{prefix}_solver"] = params.get("solver")
 
-    # Clean up any None values to prevent Optuna from crashing
     return {k: v for k, v in seed.items() if v is not None}

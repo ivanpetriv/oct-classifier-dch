@@ -9,7 +9,7 @@ def extract_ldch(
     bins: int,
 ) -> np.ndarray:
     """
-    Extracts the cumulative directional histogram using PyO3 and Rust Rayon.
+    Extracts the cumulative directional histogram using PyO3 and Rust.
     """
 
 def extract_cdch(
@@ -22,7 +22,7 @@ def extract_cdch(
     bins: int,
 ) -> np.ndarray:
     """
-    Extracts Circular Distributed Cumulative Histograms using Rust Rayon.
+    Extracts Circular Distributed Cumulative Histograms using Rust.
     """
 
 def extract_rdch(
@@ -35,5 +35,5 @@ def extract_rdch(
     bins: int,
 ) -> np.ndarray:
     """
-    Extracts Ring Distributed Cumulative Histograms using Rust Rayon.
+    Extracts Ring Distributed Cumulative Histograms using Rust.
     """

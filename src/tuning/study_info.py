@@ -63,7 +63,7 @@ def get_studies(db_path: str) -> list[optuna.study.StudySummary]:
 
 
 def explore_studies(db_path: str) -> None:
-    """List every Optuna study in the database."""
+    """Lists every Optuna study in the database."""
     studies = get_studies(db_path)
 
     if not studies:
@@ -90,7 +90,7 @@ OPTUNA STUDIES IN '{db_path}'
 
 
 def explore_trials(db_path: str, study_name: str) -> None:
-    """Print every trial in a specific study."""
+    """Prints every trial in a specific study."""
     storage_url = f"sqlite:///{db_path}"
 
     try:

@@ -333,43 +333,12 @@ class FeatureExtractorTuners:
             ),
         }
 
-    @staticmethod
-    def tune_rcldch(
-        trial: optuna.Trial,
-        prefix: str = "rcldch",
-    ) -> dict[str, Any]:
-        return {
-            "bins": trial.suggest_int(
-                f"{prefix}_bins",
-                64,
-                256,
-                step=64,
-            ),
-            "sections": trial.suggest_categorical(
-                f"{prefix}_sections",
-                [32, 64, 128],
-            ),
-            "pixel_range": (
-                trial.suggest_int(
-                    f"{prefix}_min_val",
-                    0,
-                    50,
-                ),
-                trial.suggest_int(
-                    f"{prefix}_max_val",
-                    200,
-                    255,
-                ),
-            ),
-        }
-
     REGISTRY: ClassVar = {
         "hog": tune_hog,
         "lbp": tune_lbp,
         "cdch": tune_cdch,
         "ldch": tune_ldch,
         "rdch": tune_rdch,
-        "rcldch": tune_rcldch,
     }
 
 
