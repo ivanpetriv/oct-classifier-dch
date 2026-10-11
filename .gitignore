@@ -5,6 +5,7 @@ run_data/
 .venv/
 **/__pycache__/
 oct.egg-info/
+rust-src/target/
 
 .env
 optuna_tuning.db
