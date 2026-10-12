@@ -44,3 +44,12 @@ run-oct = "main:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.pytest.ini_options]
+env = [
+    "OMP_NUM_THREADS=1",
+    "OPENBLAS_NUM_THREADS=1",
+    "MKL_NUM_THREADS=1",
+    "RAYON_NUM_THREADS=1",
+]
+testpaths = ["tests"]
