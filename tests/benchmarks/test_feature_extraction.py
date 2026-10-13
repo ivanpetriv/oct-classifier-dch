@@ -99,7 +99,7 @@ def test_hog_speed(
 def test_loop_speed(
     benchmark: BenchmarkFixture, benchmark_images: npt.NDArray[np.uint8]
 ):
-    """Tests the time it takes to only loop through all images."""
+    """Tests the time it takes to only loop through all images without any extracting."""
 
     class NoOp:
         def extract(self, image: npt.NDArray[np.uint8]):

@@ -1,3 +1,5 @@
+"""Type annotations for DCH Rust implementations"""
+
 import numpy as np
 
 def extract_ldch(

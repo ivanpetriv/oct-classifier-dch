@@ -11,8 +11,8 @@ from typing import Any
 
 import joblib  # type: ignore
 import numpy as np
-from PIL import Image
 import optuna
+from PIL import Image
 from sklearn.metrics import classification_report  # type: ignore
 
 from config.oct_config import OctConfig
